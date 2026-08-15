@@ -1,5 +1,6 @@
 FROM golang:1.20-alpine AS builder
-RUN apk add --no-network --no-cache git make
+
+WORKDIR /app
 RUN go install github.com/shazow/ssh-chat/cmd/ssh-chat@latest
 
 FROM alpine:latest
