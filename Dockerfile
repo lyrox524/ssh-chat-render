@@ -5,18 +5,16 @@ RUN go install github.com/shazow/ssh-chat/cmd/ssh-chat@latest
 
 FROM alpine:latest
 
-# Ngrok-un rəsmi Alpine deposunu əlavə edib yükləyirik
-RUN apk add --no-cache curl ca-certificates \
-    && curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | apk add --allow-untrusted - \
-    && echo "https://ngrok-agent.s3.amazonaws.com/alpine/v3.18/main" >> /etc/apk/repositories \
-    && apk update \
-    && apk add --no-cache ngrok
+# Ngrok-u birbaşa rəsmi arxivdən yükləyib çıxarırıq
+RUN apk add --no-cache curl tar \
+    && curl -sSL https://bin.equinox.io/c/b4p23AR424r/ngrok-v3-stable-linux-amd64.tgz -o ngrok.tgz \
+    && tar -xzf ngrok.tgz -C /usr/local/bin \
+    && rm ngrok.tgz
 
 COPY --from=builder /go/bin/ssh-chat /usr/local/bin/ssh-chat
 
 EXPOSE 2222
 
-# Sizin Ngrok tokeniniz
 ENV NGROK_AUTHTOKEN="3Hx3Nt4YrYgWhBCJ372OcEd3aXX_5EvsfbMP3JPz7CfeuUiS9"
 
 CMD ssh-keygen -A && \
